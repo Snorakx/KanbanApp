@@ -17,14 +17,12 @@ import { ITodoListReducer } from "../../reducers/todoListReducer";
 import { ISingleUserList } from "../../entities/todoSingleEl";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { filterTaskLevel } from "../../actions/todoList/todoListActions";
-
+import { db } from "../../constans/Config";
 import Layout from "../../constans/Layout";
 import TaskScreen from "../../components/InGreenScreen/InGreenList";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
-
-// type SetNewElemChooseProject = ReturnType<typeof setNewElemChooseProject>;
 
 const buttonHeight = 0.15 * hW;
 const buttonWidth = 0.3 * wW;
@@ -32,19 +30,25 @@ const buttonWidth = 0.3 * wW;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "white",
   },
   buttonListContainer: {
     flexDirection: "row",
-    height: 0.1 * wW,
+    height: 0.15 * wW,
   },
   buttonList: {
-    backgroundColor: "#ffffff65",
     width: buttonWidth,
     height: buttonHeight,
     marginLeft: 0.03 * wW,
-    borderRadius: 0.01 * wW,
-    marginTop: 0.02 * wW,
+    borderRadius: wW / 50,
+    marginTop: 0.04 * wW,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   buttonName: {
     textAlign: "center",
@@ -56,31 +60,40 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   addListBtn: {
-    backgroundColor: "green",
     width: buttonWidth,
     height: buttonHeight,
     marginLeft: 0.03 * wW,
-    borderRadius: 0.01 * wW,
-    marginTop: 0.02 * wW,
+    borderRadius: wW / 50,
+    marginTop: 0.04 * wW,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  imgBtn: {
+    width: "100%",
+    height: "100%",
+  },
+  Title: {
+    color: "white",
+    textAlign: "center",
+    marginTop: "20%",
+    position: "absolute",
+    width: "80%",
+    left: "10%",
   },
 });
 
 type FilterTaskLevel = ReturnType<typeof filterTaskLevel>;
 
-interface IChooseProjectProps {}
-
 const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
-  const nav = useNavigation();
   const dispatch = useDispatch();
-
-  const route = useRoute();
 
   const goToForm = () => {
     props.switchView(true);
-  };
-
-  const openList = (id) => {
-    nav.navigate("InGreenListScreen");
   };
 
   const todoListState = useSelector<IState, ITodoListReducer>(
@@ -88,7 +101,24 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
   );
 
   const filterList = (index: number) => {
+    updateList();
     dispatch<FilterTaskLevel>(filterTaskLevel(index));
+  };
+
+  const updateList = () => {
+    db.ref("tasks").once("value", (snapshot) => {
+      let data = snapshot.val() || {};
+      let datanum = snapshot.numChildren();
+      let keys = Object.keys(data);
+
+      keys.forEach((key) => {
+        if (todoListState.singleUserList.length === datanum) {
+          console.log("to samo");
+        } else {
+          todoListState.singleUserList.push(data[key]);
+        }
+      });
+    });
   };
 
   return (
@@ -102,11 +132,18 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
             }}
             key={index}
           >
-            <Text>{elem.name}</Text>
+            <Image
+              style={styles.imgBtn}
+              source={require("../../assets/folder.png")}
+            ></Image>
+            <Text style={styles.Title}>{elem.name}</Text>
           </TouchableOpacity>
         ))}
         <TouchableOpacity style={styles.addListBtn} onPress={goToForm}>
-          <Text>+</Text>
+          <Image
+            style={styles.imgBtn}
+            source={require("../../assets/addList.png")}
+          ></Image>
         </TouchableOpacity>
       </ScrollView>
       <TaskScreen />

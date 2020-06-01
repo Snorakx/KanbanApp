@@ -9,7 +9,7 @@ const HomeScreen = () => {
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: "pink", marginTop: Layout.statusBar }}
+      style={{ flex: 1, marginTop: Layout.statusBar }}
     >
       {formView ? (
         <ListForm switchView={setFormView} />

@@ -1,10 +1,11 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, createRef } from "react";
 import {
   Text,
   Button,
   View,
   ScrollView,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   ColorPropType,
 } from "react-native";
@@ -13,11 +14,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
 import { InGreenElement } from "../../entities/todoSingleEl";
+import { db } from "../../constans/Config";
 import {
   taskLevelUp,
   deleteElemTodoList,
 } from "../../actions/todoList/todoListActions";
-import { AntDesign } from "react-native-vector-icons";
+import {
+  Feather,
+  FontAwesome5,
+  Entypo,
+  MaterialIcons,
+  AntDesign,
+} from "react-native-vector-icons";
 import Layout from "../../constans/Layout";
 import { useNavigation } from "@react-navigation/native";
 
@@ -27,27 +35,52 @@ const hW = Layout.window.height;
 const styles = StyleSheet.create({
   container: {
     flex: 7,
-    backgroundColor: "gray",
+    backgroundColor: "#f0f0f0",
   },
   taskBox: {
     height: 0.7 * hW,
     marginTop: 0.05 * hW,
     marginBottom: 0.05 * hW,
     width: 0.9 * wW,
-    backgroundColor: "whitesmoke",
+    backgroundColor: "#d6e6ff",
     marginLeft: wW / 2 - (0.9 * wW) / 2,
+    borderRadius: wW / 50,
+    borderWidth: 0.004 * wW,
+    borderColor: "#8fbcff",
+    shadowColor: "#0155b7",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   taskScroller: {
     marginTop: 0.05 * wW,
     marginBottom: 0.05 * wW,
+    backgroundColor: "#8fbcff75",
+    width: 0.8 * wW,
+    marginLeft: wW / 2 - (0.9 * wW) / 2,
   },
   task: {
-    backgroundColor: "brown",
+    backgroundColor: "#8fbcff",
     width: 0.8 * wW,
     height: 0.1 * hW,
     marginBottom: 0.03 * hW,
-    marginLeft: wW / 2 - (0.9 * wW) / 2,
+    shadowColor: "#0155b7",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
+  taskName: {
+    marginTop: 0.025 * wW,
+    textAlign: "center",
+    fontSize: 0.07 * wW,
+  },
+
   addBtn: {
     position: "absolute",
     width: wW / 7,
@@ -56,10 +89,46 @@ const styles = StyleSheet.create({
     right: 0.08 * wW,
   },
   addBtnIcon: {
-    color: "black",
-    fontSize: wW / 7,
+    color: "#0180ff",
+    fontSize: wW / 6.75,
     textAlign: "center",
     marginTop: -0.01 * hW,
+  },
+  deleteTask: {
+    backgroundColor: "#0180ff",
+    flexDirection: "row",
+    width: 0.3 * wW,
+    height: 0.1 * hW,
+    marginBottom: 0.03 * hW,
+    shadowColor: "#0155b7",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  doneTask: {
+    backgroundColor: "#0180ff",
+    flexDirection: "row",
+    width: 0.3 * wW,
+    height: 0.1 * hW,
+    marginBottom: 0.03 * hW,
+    shadowColor: "#0155b7",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+
+  inOptionsIcon: {
+    fontSize: 0.08 * wW,
+    position: "absolute",
+    marginLeft: 0.03 * wW,
+    color: "#00000075",
+    marginTop: 0.02 * wW,
   },
 });
 
@@ -75,11 +144,36 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
   );
   const nav = useNavigation();
 
+  const ref = db.ref("tasks");
+
   const levelUp = (elem, lvl, id) => {
     dispatch<TaskLevelUp>(taskLevelUp(elem, lvl, id));
+    let lvlx = lvl++;
+    db.ref("tasks").on("value", (snapshot) => {
+      let data = snapshot.val() || {};
+      let keys = Object.keys(data);
+      keys.forEach((key) => {
+        if (data[key].id === id) {
+          console.log(lvlx);
+        }
+      });
+    });
   };
 
   const deleteMe = (id) => {
+    db.ref("tasks").on("value", (snapshot) => {
+      let data = snapshot.val() || {};
+      let keys = Object.keys(data);
+
+      keys.forEach((key) => {
+        if (data[key].id === id) {
+          db.ref("tasks").child(key).remove();
+        } else {
+          console.log(data[key].id);
+        }
+      });
+    });
+
     dispatch<DeleteElemTodoList>(deleteElemTodoList(id));
   };
 
@@ -92,22 +186,37 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
       <View style={styles.taskBox}>
         <ScrollView style={styles.taskScroller}>
           {todoListState.temp.map((elem: InGreenElement, index: number) => (
-            <TouchableOpacity
-              style={styles.task}
+            <ScrollView
+              horizontal={true}
+              pagingEnabled={true}
+              showsHorizontalScrollIndicator={false}
               key={index}
-              onPress={() => {
-                levelUp(elem, elem.taskLevel, elem.id);
-              }}
             >
-              <Text>
-                {elem.name} naLevelu: {elem.taskLevel}
-              </Text>
-            </TouchableOpacity>
+              <View style={styles.task} key={index}>
+                <Text style={styles.taskName}>{elem.name}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  levelUp(elem, elem.taskLevel, elem.id);
+                }}
+                style={styles.doneTask}
+              >
+                <Text style={styles.inOptionsIcon}>Done</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  deleteMe(elem.id);
+                }}
+                style={styles.deleteTask}
+              >
+                <Text style={styles.inOptionsIcon}>Delete</Text>
+              </TouchableOpacity>
+            </ScrollView>
           ))}
         </ScrollView>
       </View>
       <TouchableOpacity onPress={addTask} style={styles.addBtn}>
-        <AntDesign name="pluscircle" style={styles.addBtnIcon} />
+        <Feather name="plus-circle" style={styles.addBtnIcon} />
       </TouchableOpacity>
     </View>
   );

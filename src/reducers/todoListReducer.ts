@@ -1,46 +1,19 @@
 import * as actionTypes from "../actions/todoList/types/todolistTypes";
-import {
-  ISingleElementList,
-  ISingleUserList,
-  InGreenElement,
-} from "../entities/todoSingleEl";
+import { ISingleUserList, InGreenElement } from "../entities/todoSingleEl";
+import { db } from "../constans/Config";
 
 export interface ITodoListReducer {
-  // todoList: ISingleElementList[];
-  // inGreenList: InGreenElement[];
-  // inGreenListLevel2: InGreenElement[];
-  // inGreenListLevel3: InGreenElement[];
   userList: ISingleUserList[];
   singleUserList: InGreenElement[];
   temp: InGreenElement[];
 }
 
 const defaultState = (): ITodoListReducer => ({
-  // todoList: [],
-  // inGreenList: [],
-  // inGreenListLevel2: [],
-  // inGreenListLevel3: [],
   temp: [],
 
   userList: [],
 
-  singleUserList: [
-    {
-      name: "Task1",
-      id: 1,
-      taskLevel: 0,
-    },
-    {
-      name: "Task2",
-      id: 2,
-      taskLevel: 1,
-    },
-    {
-      name: "Task3",
-      id: 3,
-      taskLevel: 2,
-    },
-  ],
+  singleUserList: [],
 });
 
 export default (state = defaultState(), action: any): ITodoListReducer => {
