@@ -1,31 +1,10 @@
-import React, { FC, useState, createRef } from "react";
-import {
-  Text,
-  Button,
-  View,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ColorPropType,
-} from "react-native";
-import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import React, { FC } from "react";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
-import { InGreenElement } from "../../entities/todoSingleEl";
 import { db } from "../../constans/Config";
-import {
-  taskLevelUp,
-  deleteElemTodoList,
-} from "../../actions/todoList/todoListActions";
-import {
-  Feather,
-  FontAwesome5,
-  Entypo,
-  MaterialIcons,
-  AntDesign,
-} from "react-native-vector-icons";
+
 import Layout from "../../constans/Layout";
 import { useNavigation } from "@react-navigation/native";
 
@@ -55,20 +34,29 @@ interface IOnStartScreen {}
 const OnStartScreen: FC<IOnStartScreen> = (props) => {
   const nav = useNavigation();
 
-  const ref = db.ref("tasks");
-
-  ref.on("value", (snapshot) => {
-    let data = snapshot.val() || {};
-  });
+  const todoListState = useSelector<IState, ITodoListReducer>(
+    (state) => state.todoList
+  );
 
   const addTask = () => {
-    nav.navigate("Home");
+    db.ref("lists")
+      .once("value", (snapshot) => {
+        let data = snapshot.val() || [];
+        let keys = Object.keys(data);
+
+        keys.forEach((key) => {
+          if (todoListState.userList.length !== snapshot.numChildren()) {
+            todoListState.userList.push(data[key]);
+          }
+        });
+      })
+      .then(() => nav.navigate("Home"));
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.login} onPress={addTask}>
-        <Text style={styles.loginText}>LOGIN</Text>
+        <Text style={styles.loginText}>Start</Text>
       </TouchableOpacity>
     </View>
   );

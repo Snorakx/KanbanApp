@@ -1,15 +1,11 @@
-import React, { FC, useState, createRef } from "react";
+import React, { FC } from "react";
 import {
   Text,
-  Button,
   View,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  ColorPropType,
 } from "react-native";
-import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
@@ -19,15 +15,10 @@ import {
   taskLevelUp,
   deleteElemTodoList,
 } from "../../actions/todoList/todoListActions";
-import {
-  Feather,
-  FontAwesome5,
-  Entypo,
-  MaterialIcons,
-  AntDesign,
-} from "react-native-vector-icons";
+import { Feather } from "react-native-vector-icons";
 import Layout from "../../constans/Layout";
 import { useNavigation } from "@react-navigation/native";
+import firebase from "firebase";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -146,22 +137,27 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
 
   const ref = db.ref("tasks");
 
-  const levelUp = (elem, lvl, id) => {
+  const levelUp = (elem, lvl: number, id: number) => {
     dispatch<TaskLevelUp>(taskLevelUp(elem, lvl, id));
-    let lvlx = lvl++;
-    db.ref("tasks").on("value", (snapshot) => {
+
+    ref.once("value", (snapshot) => {
       let data = snapshot.val() || {};
       let keys = Object.keys(data);
       keys.forEach((key) => {
         if (data[key].id === id) {
-          console.log(lvlx);
+          return db
+            .ref("tasks/" + key)
+            .child("taskLevel")
+            .set(firebase.database.ServerValue.increment(1));
         }
       });
     });
   };
 
   const deleteMe = (id) => {
-    db.ref("tasks").on("value", (snapshot) => {
+    dispatch<DeleteElemTodoList>(deleteElemTodoList(id));
+
+    db.ref("tasks").once("value", (snapshot) => {
       let data = snapshot.val() || {};
       let keys = Object.keys(data);
 
@@ -173,8 +169,6 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
         }
       });
     });
-
-    dispatch<DeleteElemTodoList>(deleteElemTodoList(id));
   };
 
   const addTask = () => {

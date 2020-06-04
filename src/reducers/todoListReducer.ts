@@ -42,6 +42,12 @@ export default (state = defaultState(), action: any): ITodoListReducer => {
         temp: [...state.temp.filter((elem) => elem.id != action.id)],
       };
     }
+    case actionTypes.DELETE_LIST: {
+      return {
+        ...state,
+        userList: [...state.userList.filter((elem) => elem.id != action.id)],
+      };
+    }
 
     case actionTypes.TASK_LEVEL_UP: {
       return {

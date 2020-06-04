@@ -1,23 +1,12 @@
 import React, { FC, useState } from "react";
-import styled from "styled-components";
-import {
-  TextInput,
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Button,
-  Image,
-} from "react-native";
+import { TextInput, View, StyleSheet, Button, Image } from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setNewElemTodoList,
-  addNewList,
-} from "../../actions/todoList/todoListActions";
+import { setNewElemTodoList } from "../../actions/todoList/todoListActions";
 import { InGreenElement } from "../../entities/todoSingleEl";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Layout from "../../constans/Layout";
 import { db } from "../../constans/Config";
 
@@ -71,16 +60,10 @@ const styles = StyleSheet.create({
 
 type SetNewElemTodoList = ReturnType<typeof setNewElemTodoList>;
 
-interface IFormTodo {}
-
 const FormTodo = (props) => {
   const dispatch = useDispatch();
 
   const [nameInput, setNameInput] = useState<string>("");
-
-  const todoListState = useSelector<IState, ITodoListReducer>(
-    (state) => state.todoList
-  );
 
   const nav = useNavigation();
 
@@ -134,9 +117,3 @@ const FormTodo = (props) => {
 };
 
 export default FormTodo;
-
-// db.ref("/items").push({
-//   name: nameInput,
-//   id: Date.now(),
-//   taskLevel: lvl,
-// });

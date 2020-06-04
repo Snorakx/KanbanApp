@@ -15,10 +15,3 @@ export interface ISingleUserList {
   elem: InGreenElement[];
   id: number;
 }
-
-// export interface InTestingElement {
-//   name: string;
-// }
-// export interface DoneElement {
-//   name: string;
-// }

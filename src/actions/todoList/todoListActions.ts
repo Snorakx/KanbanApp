@@ -1,9 +1,5 @@
 import * as actiontypes from "./types/todolistTypes";
-import {
-  ISingleElementList,
-  InGreenElement,
-  ISingleUserList,
-} from "../../entities/todoSingleEl";
+import { InGreenElement, ISingleUserList } from "../../entities/todoSingleEl";
 
 export const setNewElemTodoList = (newElem: InGreenElement) => ({
   type: actiontypes.SET_NEW_ELEM,
@@ -28,4 +24,9 @@ export const taskLevelUp = (elem, lvl, id) => ({
 export const filterTaskLevel = (index: number) => ({
   type: actiontypes.FILTER_TASK_LEVEL,
   index,
+});
+
+export const deleteList = (id: number) => ({
+  type: actiontypes.DELETE_LIST,
+  id,
 });

@@ -1,22 +1,20 @@
 import React, { FC, useState } from "react";
 import {
   Text,
-  Button,
   View,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
-  ColorPropType,
   Image,
-  TextInput,
+  TouchableHighlight,
 } from "react-native";
-import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
 import { ISingleUserList } from "../../entities/todoSingleEl";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { filterTaskLevel } from "../../actions/todoList/todoListActions";
+import {
+  filterTaskLevel,
+  deleteList,
+} from "../../actions/todoList/todoListActions";
 import { db } from "../../constans/Config";
 import Layout from "../../constans/Layout";
 import TaskScreen from "../../components/InGreenScreen/InGreenList";
@@ -88,25 +86,21 @@ const styles = StyleSheet.create({
 });
 
 type FilterTaskLevel = ReturnType<typeof filterTaskLevel>;
+type DeleteList = ReturnType<typeof deleteList>;
 
 const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
   const dispatch = useDispatch();
+  const todoListState = useSelector<IState, ITodoListReducer>(
+    (state) => state.todoList
+  );
 
   const goToForm = () => {
     props.switchView(true);
   };
 
-  const todoListState = useSelector<IState, ITodoListReducer>(
-    (state) => state.todoList
-  );
-
   const filterList = (index: number) => {
-    updateList();
     dispatch<FilterTaskLevel>(filterTaskLevel(index));
-  };
-
-  const updateList = () => {
-    db.ref("tasks").once("value", (snapshot) => {
+    db.ref("tasks").on("value", (snapshot) => {
       let data = snapshot.val() || {};
       let datanum = snapshot.numChildren();
       let keys = Object.keys(data);
@@ -121,30 +115,56 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
     });
   };
 
+  const deleteThisList = (id: number) => {
+    dispatch<DeleteList>(deleteList(id));
+
+    db.ref("lists").once("value", (snapshot) => {
+      let data = snapshot.val() || {};
+      let keys = Object.keys(data);
+
+      keys.forEach((key) => {
+        if (data[key].id === id) {
+          db.ref("lists").child(key).remove();
+        } else {
+          console.log("nie tu");
+        }
+      });
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.buttonListContainer} horizontal={true}>
+      <ScrollView
+        style={styles.buttonListContainer}
+        showsHorizontalScrollIndicator={false}
+        horizontal={true}
+      >
         {todoListState.userList.map((elem: ISingleUserList, index: number) => (
-          <TouchableOpacity
+          <TouchableHighlight
             style={styles.buttonList}
             onPress={() => {
               filterList(index);
             }}
+            onLongPress={() => {
+              deleteThisList(elem.id);
+            }}
             key={index}
           >
-            <Image
-              style={styles.imgBtn}
-              source={require("../../assets/folder.png")}
-            ></Image>
-            <Text style={styles.Title}>{elem.name}</Text>
-          </TouchableOpacity>
+            <View>
+              <Image
+                style={styles.imgBtn}
+                source={require("../../assets/folder.png")}
+              ></Image>
+              <Text style={styles.Title}>{elem.name}</Text>
+            </View>
+          </TouchableHighlight>
         ))}
-        <TouchableOpacity style={styles.addListBtn} onPress={goToForm}>
+        <TouchableHighlight style={styles.addListBtn} onPress={goToForm}>
           <Image
             style={styles.imgBtn}
             source={require("../../assets/addList.png")}
           ></Image>
-        </TouchableOpacity>
+        </TouchableHighlight>
       </ScrollView>
       <TaskScreen />
     </View>

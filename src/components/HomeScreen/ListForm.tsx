@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { addNewList } from "../../actions/todoList/todoListActions";
 import { ISingleUserList } from "../../entities/todoSingleEl";
 import Layout from "../../constans/Layout";
+import { db } from "../../constans/Config";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -81,14 +82,24 @@ const ListForm: FC<{ switchView(formView: boolean) }> = (props) => {
     setNameInput(txt.nativeEvent.text);
   };
 
+  let date = Date.now();
+
+  const addToDb = () => {
+    db.ref("lists").push({
+      name: nameInput,
+      id: date,
+    });
+  };
+
   const saveData = () => {
     dispatch<AddNewList>(
       addNewList({
         elem: [],
         name: nameInput,
-        id: Date.now(),
+        id: date,
       } as ISingleUserList)
     );
+    addToDb();
     props.switchView(false);
   };
 
