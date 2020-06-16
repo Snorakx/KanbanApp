@@ -1,4 +1,8 @@
 import Firebase from "firebase";
+import * as Google from "expo-google-app-auth";
+
+import "firebase/auth";
+import firebase from "firebase";
 const firebaseConfig = {
   apiKey: "AIzaSyCRoGDCiTicpe0cPoB5q___qYeBhZWxDsQ",
   authDomain: "kanbanrn.firebaseapp.com",
@@ -9,6 +13,8 @@ const firebaseConfig = {
   appId: "1:385375136747:web:37e0d9397246a381fd87ae",
   measurementId: "G-WF6FLVXSX8",
 };
+
 let app = Firebase.initializeApp(firebaseConfig);
 
 export const db = app.database();
+export const auth = Firebase.auth;

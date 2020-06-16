@@ -26,7 +26,8 @@ export const filterTaskLevel = (index: number) => ({
   index,
 });
 
-export const deleteList = (id: number) => ({
+export const deleteList = (id: number, index: number) => ({
   type: actiontypes.DELETE_LIST,
   id,
+  index,
 });

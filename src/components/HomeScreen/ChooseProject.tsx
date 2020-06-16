@@ -18,6 +18,7 @@ import {
 import { db } from "../../constans/Config";
 import Layout from "../../constans/Layout";
 import TaskScreen from "../../components/InGreenScreen/InGreenList";
+import firebase from "firebase";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -90,6 +91,8 @@ type DeleteList = ReturnType<typeof deleteList>;
 
 const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
   const dispatch = useDispatch();
+  let user = firebase.auth().currentUser.uid;
+
   const todoListState = useSelector<IState, ITodoListReducer>(
     (state) => state.todoList
   );
@@ -100,7 +103,7 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
 
   const filterList = (index: number) => {
     dispatch<FilterTaskLevel>(filterTaskLevel(index));
-    db.ref("tasks").on("value", (snapshot) => {
+    db.ref("users/" + user + "/tasks").on("value", (snapshot) => {
       let data = snapshot.val() || {};
       let datanum = snapshot.numChildren();
       let keys = Object.keys(data);
@@ -115,16 +118,32 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
     });
   };
 
-  const deleteThisList = (id: number) => {
-    dispatch<DeleteList>(deleteList(id));
+  const deleteThisList = (id: number, index: number) => {
+    dispatch<DeleteList>(deleteList(id, index));
 
-    db.ref("lists").once("value", (snapshot) => {
+    db.ref("users/" + user + "/lists").once("value", (snapshot) => {
       let data = snapshot.val() || {};
       let keys = Object.keys(data);
 
       keys.forEach((key) => {
         if (data[key].id === id) {
-          db.ref("lists").child(key).remove();
+          db.ref("users/" + user + "/lists")
+            .child(key)
+            .remove();
+          db.ref("users/" + user + "/tasks").once("value", (snapshot) => {
+            const tasks = snapshot.val();
+            let taskKeys = Object.keys(tasks);
+            taskKeys.forEach((key) => {
+              if (tasks[key].taskLevel === index) {
+                db.ref("users/" + user + "/tasks/" + key).remove();
+              } else if (tasks[key].taskLevel > index) {
+                return db
+                  .ref("users/" + user + "/tasks/" + key)
+                  .child("taskLevel")
+                  .set(firebase.database.ServerValue.increment(-1));
+              }
+            });
+          });
         } else {
           console.log("nie tu");
         }
@@ -146,7 +165,7 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
               filterList(index);
             }}
             onLongPress={() => {
-              deleteThisList(elem.id);
+              deleteThisList(elem.id, index);
             }}
             key={index}
           >

@@ -9,6 +9,7 @@ import { ITodoListReducer } from "../../reducers/todoListReducer";
 import { useNavigation } from "@react-navigation/native";
 import Layout from "../../constans/Layout";
 import { db } from "../../constans/Config";
+import firebase from "firebase";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -63,6 +64,8 @@ type SetNewElemTodoList = ReturnType<typeof setNewElemTodoList>;
 const FormTodo = (props) => {
   const dispatch = useDispatch();
 
+  let user = firebase.auth().currentUser.uid;
+
   const [nameInput, setNameInput] = useState<string>("");
 
   const nav = useNavigation();
@@ -74,10 +77,8 @@ const FormTodo = (props) => {
   const lvl = 0;
   let data = Date.now();
 
-  const ref = db.ref("tasks");
-
   const addToDb = () => {
-    ref.push({
+    db.ref("users/" + user + "/tasks").push({
       name: nameInput,
       id: data,
       taskLevel: lvl,

@@ -134,8 +134,9 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
     (state) => state.todoList
   );
   const nav = useNavigation();
+  let user = firebase.auth().currentUser.uid;
 
-  const ref = db.ref("tasks");
+  let ref = db.ref("users/" + user + "/tasks");
 
   const levelUp = (elem, lvl: number, id: number) => {
     dispatch<TaskLevelUp>(taskLevelUp(elem, lvl, id));
@@ -146,7 +147,7 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
       keys.forEach((key) => {
         if (data[key].id === id) {
           return db
-            .ref("tasks/" + key)
+            .ref("users/" + user + "/tasks/" + key)
             .child("taskLevel")
             .set(firebase.database.ServerValue.increment(1));
         }
@@ -157,13 +158,15 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
   const deleteMe = (id) => {
     dispatch<DeleteElemTodoList>(deleteElemTodoList(id));
 
-    db.ref("tasks").once("value", (snapshot) => {
+    ref.once("value", (snapshot) => {
       let data = snapshot.val() || {};
       let keys = Object.keys(data);
 
       keys.forEach((key) => {
         if (data[key].id === id) {
-          db.ref("tasks").child(key).remove();
+          db.ref("users/" + user + "/tasks")
+            .child(key)
+            .remove();
         } else {
           console.log(data[key].id);
         }

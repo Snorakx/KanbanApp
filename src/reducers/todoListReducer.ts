@@ -46,6 +46,17 @@ export default (state = defaultState(), action: any): ITodoListReducer => {
       return {
         ...state,
         userList: [...state.userList.filter((elem) => elem.id != action.id)],
+        singleUserList: [
+          ...state.singleUserList.filter(
+            (elem) => elem.taskLevel != action.index
+          ),
+        ],
+        temp: [...state.temp.filter((elem) => elem.taskLevel != action.index)],
+        ...state.singleUserList.map((elem) => {
+          if (elem.taskLevel > action.index) {
+            elem.taskLevel--;
+          }
+        }),
       };
     }
 

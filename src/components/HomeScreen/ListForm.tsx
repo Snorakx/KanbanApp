@@ -5,7 +5,8 @@ import { useDispatch } from "react-redux";
 import { addNewList } from "../../actions/todoList/todoListActions";
 import { ISingleUserList } from "../../entities/todoSingleEl";
 import Layout from "../../constans/Layout";
-import { db } from "../../constans/Config";
+import { db, user } from "../../constans/Config";
+import firebase from "firebase";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -81,11 +82,11 @@ const ListForm: FC<{ switchView(formView: boolean) }> = (props) => {
   const nameValueChange = (txt) => {
     setNameInput(txt.nativeEvent.text);
   };
-
+  let user = firebase.auth().currentUser.uid;
   let date = Date.now();
 
   const addToDb = () => {
-    db.ref("lists").push({
+    db.ref("users/" + user + "/lists").push({
       name: nameInput,
       id: date,
     });
