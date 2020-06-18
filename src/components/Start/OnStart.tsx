@@ -61,7 +61,8 @@ const OnStartScreen: FC<{ switchView(formView: boolean) }> = (props) => {
       } else {
         try {
           const result = await Google.logInAsync({
-            androidClientId: "AndroidClientID.apps.googleusercontent.com",
+            androidClientId:
+              "385375136747-pltajseufe4ge8oe2ang4e84spii5qo3.apps.googleusercontent.com",
             iosClientId:
               "385375136747-d8f4deafs2jk8m9hp09chht1b1m6275p.apps.googleusercontent.com",
             scopes: ["profile", "email"],
