@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-Abc
-=======
-Acb
->>>>>>> 5f8617740f66d7e8552839e2c780772234fb56d3
+Kanban App React Native Redux Firebase
