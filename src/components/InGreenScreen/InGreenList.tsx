@@ -15,7 +15,7 @@ import {
   taskLevelUp,
   deleteElemTodoList,
 } from "../../actions/todoList/todoListActions";
-import { Feather } from "react-native-vector-icons";
+import { AntDesign } from "react-native-vector-icons";
 import Layout from "../../constans/Layout";
 import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase";
@@ -26,100 +26,80 @@ const hW = Layout.window.height;
 const styles = StyleSheet.create({
   container: {
     flex: 7,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#2A2C3E",
   },
-  taskBox: {
-    height: 0.7 * hW,
-    marginTop: 0.05 * hW,
-    marginBottom: 0.05 * hW,
-    width: 0.9 * wW,
-    backgroundColor: "#d6e6ff",
-    marginLeft: wW / 2 - (0.9 * wW) / 2,
-    borderRadius: wW / 50,
-    borderWidth: 0.004 * wW,
-    borderColor: "#8fbcff",
-    shadowColor: "#0155b7",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
+  // taskBox: {
+  //   height: 0.7 * hW,
+  //   marginTop: 0.05 * hW,
+  //   marginBottom: 0.05 * hW,
+  //   width: 0.9 * wW,
+  //   backgroundColor: "#d6e6ff",
+  //   marginLeft: wW / 2 - (0.9 * wW) / 2,
+  //   borderRadius: wW / 50,
+  //   borderWidth: 0.004 * wW,
+  //   borderColor: "#8fbcff",
+  //   shadowColor: "#0155b7",
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 3,
+  //   },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 5,
+  // },
   taskScroller: {
     marginTop: 0.05 * wW,
     marginBottom: 0.05 * wW,
-    backgroundColor: "#8fbcff75",
     width: 0.8 * wW,
-    marginLeft: wW / 2 - (0.9 * wW) / 2,
+    marginLeft: wW / 2 - (0.8 * wW) / 2,
   },
   task: {
-    backgroundColor: "#8fbcff",
+    backgroundColor: "#94959E",
     width: 0.8 * wW,
-    height: 0.1 * hW,
+    height: 0.08 * hW,
     marginBottom: 0.03 * hW,
-    shadowColor: "#0155b7",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    borderRadius: 0.04 * wW,
   },
   taskName: {
     marginTop: 0.025 * wW,
     textAlign: "center",
     fontSize: 0.07 * wW,
+    color: "white",
   },
 
   addBtn: {
     position: "absolute",
-    width: wW / 7,
-    height: 0.15 * wW,
-    bottom: 0.05 * hW,
+    bottom: 0.07 * hW,
     right: 0.08 * wW,
+    // backgroundColor: "white",
+
+    overflow: "visible",
   },
   addBtnIcon: {
-    color: "#0180ff",
-    fontSize: wW / 6.75,
+    color: "#FF4D00",
+    fontSize: wW / 5.9,
     textAlign: "center",
-    marginTop: -0.01 * hW,
+    marginTop: -0.001 * hW,
   },
   deleteTask: {
-    backgroundColor: "#0180ff",
     flexDirection: "row",
     width: 0.3 * wW,
     height: 0.1 * hW,
     marginBottom: 0.03 * hW,
-    shadowColor: "#0155b7",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
   },
   doneTask: {
-    backgroundColor: "#0180ff",
     flexDirection: "row",
     width: 0.3 * wW,
     height: 0.1 * hW,
     marginBottom: 0.03 * hW,
-    shadowColor: "#0155b7",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
   },
 
   inOptionsIcon: {
+    textAlign: "center",
+    width: 0.3 * wW,
     fontSize: 0.08 * wW,
-    position: "absolute",
-    marginLeft: 0.03 * wW,
-    color: "#00000075",
-    marginTop: 0.02 * wW,
+    height: 0.08 * hW,
+    marginBottom: 0.03 * hW,
+    color: "white",
   },
 });
 
@@ -180,40 +160,38 @@ const TaskScreen: FC<ITaskScreen> = (props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.taskBox}>
-        <ScrollView style={styles.taskScroller}>
-          {todoListState.temp.map((elem: InGreenElement, index: number) => (
-            <ScrollView
-              horizontal={true}
-              pagingEnabled={true}
-              showsHorizontalScrollIndicator={false}
-              key={index}
+      <ScrollView style={styles.taskScroller}>
+        {todoListState.temp.map((elem: InGreenElement, index: number) => (
+          <ScrollView
+            horizontal={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            key={index}
+          >
+            <View style={styles.task} key={index}>
+              <Text style={styles.taskName}>{elem.name}</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                levelUp(elem, elem.taskLevel, elem.id);
+              }}
+              style={styles.doneTask}
             >
-              <View style={styles.task} key={index}>
-                <Text style={styles.taskName}>{elem.name}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => {
-                  levelUp(elem, elem.taskLevel, elem.id);
-                }}
-                style={styles.doneTask}
-              >
-                <Text style={styles.inOptionsIcon}>Done</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  deleteMe(elem.id);
-                }}
-                style={styles.deleteTask}
-              >
-                <Text style={styles.inOptionsIcon}>Delete</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          ))}
-        </ScrollView>
-      </View>
+              <Text style={styles.inOptionsIcon}>Done</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                deleteMe(elem.id);
+              }}
+              style={styles.deleteTask}
+            >
+              <Text style={styles.inOptionsIcon}>Delete</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        ))}
+      </ScrollView>
       <TouchableOpacity onPress={addTask} style={styles.addBtn}>
-        <Feather name="plus-circle" style={styles.addBtnIcon} />
+        <AntDesign name="pluscircle" style={styles.addBtnIcon} />
       </TouchableOpacity>
     </View>
   );

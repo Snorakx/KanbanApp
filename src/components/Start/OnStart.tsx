@@ -1,5 +1,12 @@
 import React, { FC } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { IState } from "../../reducers";
 import { ITodoListReducer } from "../../reducers/todoListReducer";
@@ -9,6 +16,8 @@ import Layout from "../../constans/Layout";
 import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
+import Swiper from "react-native-swiper";
+import SwiperComponent from "../Swiper";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
@@ -16,7 +25,7 @@ const hW = Layout.window.height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#d6e6ff",
+    backgroundColor: "#2A2C3E",
   },
   SignWithGoogleIcon: {
     flex: 1,
@@ -25,9 +34,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   SignWithGoogle: {
-    width: 0.6 * wW,
-    marginLeft: wW / 2 - (0.6 * wW) / 2,
-    marginTop: 0.6 * hW,
+    width: 0.7 * wW,
+    marginLeft: wW / 2 - (0.7 * wW) / 2,
+    marginTop: 0.2 * hW,
     height: 0.1 * hW,
   },
   loginText: {
@@ -104,13 +113,45 @@ const OnStartScreen: FC<{ switchView(formView: boolean) }> = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.SignWithGoogle} onPress={googleLogIn}>
-        <Image
-          source={require("../../assets/GoogleSignInIcon.png")}
-          style={styles.SignWithGoogleIcon}
-        ></Image>
-      </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      <SwiperComponent></SwiperComponent>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.SignWithGoogle} onPress={googleLogIn}>
+          <Image
+            source={require("../../assets/GoogleSignInIcon.png")}
+            style={styles.SignWithGoogleIcon}
+          ></Image>
+        </TouchableOpacity>
+        {/* <Swiper style={styles.scrollForPhotoBox} showsButtons={false}>
+        <View style={styles.photoBox}>
+          <Image
+            source={require("../../assets/background.png")}
+            style={styles.photo}
+          ></Image>
+          <Text style={styles.photoDescription}>
+            Keep everything under control
+          </Text>
+        </View>
+        <View style={styles.photoBox}>
+          <Image
+            source={require("../../assets/background.png")}
+            style={styles.photo}
+          ></Image>
+          <Text style={styles.photoDescription}>
+            Keep everything under control
+          </Text>
+        </View>
+        <View style={styles.photoBox}>
+          <Image
+            source={require("../../assets/background.png")}
+            style={styles.photo}
+          ></Image>
+          <Text style={styles.photoDescription}>
+            Keep everything under control
+          </Text>
+        </View>
+      </Swiper> */}
+      </View>
     </View>
   );
 };

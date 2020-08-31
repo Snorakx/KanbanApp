@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -19,17 +19,18 @@ import { db } from "../../constans/Config";
 import Layout from "../../constans/Layout";
 import TaskScreen from "../../components/InGreenScreen/InGreenList";
 import firebase from "firebase";
+import { AntDesign } from "react-native-vector-icons";
 
 const wW = Layout.window.width;
 const hW = Layout.window.height;
 
-const buttonHeight = 0.15 * hW;
+const buttonHeight = 0.1 * hW;
 const buttonWidth = 0.3 * wW;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#2A2C3E",
   },
   buttonListContainer: {
     flexDirection: "row",
@@ -41,18 +42,15 @@ const styles = StyleSheet.create({
     marginLeft: 0.03 * wW,
     borderRadius: wW / 50,
     marginTop: 0.04 * wW,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    backgroundColor: "#FF4D00",
   },
-  buttonName: {
+  addBtnIcon: {
     textAlign: "center",
-    fontSize: 0.07 * wW,
+    fontSize: 0.08 * wW,
+    color: "white",
+    marginTop: 0.04 * wW,
   },
+
   touchableButtonList: {
     width: buttonWidth,
     height: buttonHeight / 1.5,
@@ -64,25 +62,16 @@ const styles = StyleSheet.create({
     marginLeft: 0.03 * wW,
     borderRadius: wW / 50,
     marginTop: 0.04 * wW,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  imgBtn: {
-    width: "100%",
-    height: "100%",
+    backgroundColor: "#FF4D00",
   },
   Title: {
     color: "white",
     textAlign: "center",
-    marginTop: "20%",
+    marginTop: "15%",
     position: "absolute",
     width: "80%",
     left: "10%",
+    fontSize: 0.05 * wW,
   },
 });
 
@@ -99,7 +88,24 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
 
   const goToForm = () => {
     props.switchView(true);
+    // console.log(todoListState.singleUserList);
   };
+  useEffect(() => {
+    db.ref("users/" + user + "/tasks").on("value", (snapshot) => {
+      let data = snapshot.val() || {};
+      let datanum = snapshot.numChildren();
+      let keys = Object.keys(data);
+
+      keys.forEach((key) => {
+        if (todoListState.singleUserList.length === datanum) {
+          console.log("to samo");
+        } else {
+          todoListState.singleUserList.push(data[key]);
+        }
+      });
+    });
+    // Run! Like go get some data from an API.
+  }, []);
 
   const filterList = (index: number) => {
     dispatch<FilterTaskLevel>(filterTaskLevel(index));
@@ -169,20 +175,13 @@ const ChooseProject: FC<{ switchView(formView: boolean) }> = (props) => {
             }}
             key={index}
           >
-            <View>
-              <Image
-                style={styles.imgBtn}
-                source={require("../../assets/folder.png")}
-              ></Image>
+            <View style={styles.list}>
               <Text style={styles.Title}>{elem.name}</Text>
             </View>
           </TouchableHighlight>
         ))}
         <TouchableHighlight style={styles.addListBtn} onPress={goToForm}>
-          <Image
-            style={styles.imgBtn}
-            source={require("../../assets/addList.png")}
-          ></Image>
+          <AntDesign name="plus" style={styles.addBtnIcon} />
         </TouchableHighlight>
       </ScrollView>
       <TaskScreen />

@@ -8,7 +8,7 @@ const StartScreen = () => {
   const [formView, setFormView] = useState<boolean>(false);
 
   return (
-    <View style={{ flex: 1, marginTop: Layout.statusBar }}>
+    <View style={{ flex: 1 }}>
       {formView ? (
         <WelcomeScreen switchView={setFormView} />
       ) : (

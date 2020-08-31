@@ -1,5 +1,13 @@
 import React, { FC, useState } from "react";
-import { TextInput, View, StyleSheet, Button, Image } from "react-native";
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Button,
+  Image,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setNewElemTodoList } from "../../actions/todoList/todoListActions";
@@ -17,39 +25,47 @@ const hW = Layout.window.height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-  },
-  txtInput: {
-    backgroundColor: "#daded5",
-    position: "absolute",
-    top: 0.44 * hW,
-    marginLeft: 0.15 * wW,
-    borderRadius: wW / 50,
-    width: 0.7 * wW,
-    height: 0.14 * hW,
-    textAlign: "center",
-    color: "#4789a5",
-    fontSize: wW / 17,
+    backgroundColor: "#1D1F2B",
   },
   btn: {
-    position: "absolute",
-    marginTop: 0.02 * hW,
-    borderRadius: wW / 50,
-    backgroundColor: "#4789a5",
-    textAlign: "center",
+    borderRadius: 0.04 * wW,
+    backgroundColor: "#FF4D00",
     fontSize: wW / 17,
     fontWeight: "bold",
-    marginLeft: 0.15 * wW,
-    width: 0.7 * wW,
-    height: 0.06 * hW,
-    top: 0.62 * hW,
-    shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    marginLeft: 0.1 * wW,
+    width: 0.8 * wW,
+    height: 0.07 * hW,
+    top: 0.25 * hW,
+  },
+  textBtn: {
+    color: "white",
+    fontSize: 0.06 * wW,
+    textAlign: "center",
+    marginTop: 0.02 * wW,
+  },
+  labelForInput: {
+    color: "white",
+    fontSize: 0.08 * wW,
+    marginLeft: 0.1 * wW,
+    top: 0.06 * hW,
+  },
+  txtInput: {
+    backgroundColor: "#FFFFFF50",
+    position: "absolute",
+    top: 0.15 * hW,
+    marginLeft: 0.1 * wW,
+    borderRadius: 0.05 * wW,
+    width: 0.8 * wW,
+    height: 0.08 * hW,
+    textAlign: "center",
+    color: "white",
+    fontSize: 0.05 * wW,
+  },
+  form: {
+    backgroundColor: "#2A2C3E",
+    width: wW,
+    height: 0.5 * hW,
+    top: 0.25 * hW,
   },
   img: {
     resizeMode: "cover",
@@ -99,19 +115,16 @@ const FormTodo = (props) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.img}
-        source={require("../../assets/notee.png")}
-      ></Image>
-      <TextInput
-        style={styles.txtInput}
-        value={nameInput}
-        onChange={nameValueChange}
-        placeholder="Task"
-        placeholderTextColor="#4789a5"
-      />
-      <View style={styles.btn}>
-        <Button title="Create" onPress={saveData} color="gray" />
+      <View style={styles.form}>
+        <Text style={styles.labelForInput}>Name</Text>
+        <TextInput
+          style={styles.txtInput}
+          value={nameInput}
+          onChange={nameValueChange}
+        />
+        <TouchableOpacity style={styles.btn} onPress={saveData}>
+          <Text style={styles.textBtn}>Add new task</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
